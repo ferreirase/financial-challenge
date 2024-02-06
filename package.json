@@ -1,20 +1,27 @@
 {
   "name": "financial-challenge",
   "version": "1.0.0",
-  "main": "dist/index.js",
+  "main": "dist/app.js",
   "license": "MIT",
   "scripts": {
     "build": "tsc -p tsconfig.json",
-    "start": "node dist/index.js",
-    "dev": "nodemon --watch src src/index.ts"
+    "start": "node dist/app.js",
+    "dev": "nodemon --watch src src/app.ts"
   },
   "dependencies": {
+    "@fastify-resty/core": "^0.3.0",
+    "@fastify/awilix": "^4.0.0",
     "@fastify/mongodb": "^8.0.0",
+    "@inaiat/fastify-di-plugin": "^1.1.1",
+    "awilix": "^10.0.1",
     "axios": "^1.6.7",
     "bcryptjs": "^2.4.3",
     "dotenv": "^16.4.1",
     "fastify": "^4.26.0",
-    "mongoose": "^8.1.1"
+    "fastify-env": "^2.2.0",
+    "mongodb": "^6.3.0",
+    "mongoose": "^8.1.1",
+    "tsyringe": "^4.8.0"
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.6",

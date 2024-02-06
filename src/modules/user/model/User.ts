@@ -1,22 +1,21 @@
 import bcrypt from 'bcryptjs';
 import mongoose, { CallbackError, Document, Schema } from 'mongoose';
 
-enum UserType {
-  PJ = 1,
-  PF = 2,
-};
+export type UserType = 'PF'  | 'PJ';
 
 export interface IUser extends Document {
   type: UserType;
   name: string;
   email: string;
+  register_number: string;
   password: string;
 }
 
 const UserSchema: Schema = new Schema({
-  type: { type: UserType, required: true },
+  type: { type: String, required: true },
   name: { type: String, required: true },
   email: { type: String, required: true },
+  register_number: { type: String, required: true },
   password: { type: String, required: true },
   createdAt: { type: Date, default: Date.now }
 });
