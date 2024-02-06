@@ -8,6 +8,8 @@
     "forceConsistentCasingInFileNames": true,
     "outDir": "./dist",
     "rootDir": "./src",
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true
   },
   "watchDirectory": "./src",
   "include": ["src/**/*.ts"],

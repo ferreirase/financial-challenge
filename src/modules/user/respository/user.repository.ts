@@ -1,14 +1,24 @@
-import UserModel, { IUser } from "../model/User";
+import { Collection } from 'mongodb';
+import { UsersInjectableDependencies } from '../diConfig';
+import { IUser } from '../model/User';
 import IUserRepository from "./interface";
 
-export default class UserRepository implements IUserRepository {
+export default class UserMongoRepository implements IUserRepository {
+  private readonly userModel: Collection<IUser>;
+
+  constructor({ mongo }: UsersInjectableDependencies) {
+    this.userModel = mongo.db(process.env.MONGO_DBNAME).collection<IUser>('users');
+  }
+
   async findOneByRegisterNumber(register_number: string) {
-    const userFound = await UserModel.findOne({ register_number }).select('-password').exec();
+    const userFound = await this.userModel.findOne({ register_number });
 
     return userFound?.toObject();
   }
 
-  async findAll(): Promise<Omit<IUser, "password">[] | []> {
-    return await UserModel.find({}, { password: 0 }).then((users) => users.map((user) => user.toJSON()));
+  async findAll() {
+    return await this.userModel.find({}, { 
+      projection: { password: 0 }
+     }).toArray();
   }
 }

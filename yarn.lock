@@ -27,6 +27,11 @@
     ajv-formats "^2.1.1"
     fast-uri "^2.0.0"
 
+"@fastify/autoload@^5.8.0":
+  version "5.8.0"
+  resolved "https://registry.yarnpkg.com/@fastify/autoload/-/autoload-5.8.0.tgz#533257b868a1ac7e65d720c7ff815aa6a53825cc"
+  integrity sha512-bF86vl+1Kk91S41WIL9NrKhcugGQg/cQ959aTaombkCjA+9YAbgVCKKu2lRqtMsosDZ0CNRfVnaLYoHQIDUI2A==
+
 "@fastify/awilix@^4.0.0":
   version "4.0.0"
   resolved "https://registry.yarnpkg.com/@fastify/awilix/-/awilix-4.0.0.tgz#eb1c9eb8c740e56eeaaff5b5bccb8f24c2df82bc"
@@ -515,6 +520,13 @@ fast-uri@^2.0.0, fast-uri@^2.1.0:
   resolved "https://registry.yarnpkg.com/fast-uri/-/fast-uri-2.3.0.tgz#bdae493942483d299e7285dcb4627767d42e2793"
   integrity sha512-eel5UKGn369gGEWOqBShmFJWfq/xSJvsgDzgLYC845GneayWvXBf0lJCBn5qTABfewy1ZDPoaR5OZCP+kssfuw==
 
+fastify-decorators@^3.15.1:
+  version "3.15.1"
+  resolved "https://registry.yarnpkg.com/fastify-decorators/-/fastify-decorators-3.15.1.tgz#2fb97346953faf6a13dd2051de39ee3a69e98bbc"
+  integrity sha512-JjjiX2PvVOi9u4jUsmC3C6E3EY6zvFBjQN9yOBGIkxRdBP/Xef9GBnBI3823Srd/LLZHyDH9wZaGQDrJ9zykKQ==
+  dependencies:
+    fastify-plugin "^2.0.0 || ^3.0.0 || ^4.0.0"
+
 "fastify-env-deprecated@npm:fastify-env@2.1.1":
   version "2.1.1"
   resolved "https://registry.yarnpkg.com/fastify-env/-/fastify-env-2.1.1.tgz#443cc8f9b443320bfd9330975606fdbb2ba2f799"
@@ -531,15 +543,15 @@ fastify-env@^2.2.0:
     fastify-env-deprecated "npm:fastify-env@2.1.1"
     process-warning "^1.0.0"
 
+"fastify-plugin@^2.0.0 || ^3.0.0 || ^4.0.0", fastify-plugin@^4.0.0, fastify-plugin@^4.2.0, fastify-plugin@^4.5.1:
+  version "4.5.1"
+  resolved "https://registry.yarnpkg.com/fastify-plugin/-/fastify-plugin-4.5.1.tgz#44dc6a3cc2cce0988bc09e13f160120bbd91dbee"
+  integrity sha512-stRHYGeuqpEZTL1Ef0Ovr2ltazUT9g844X5z/zEBFLG8RYlpDiOCIG+ATvYEp+/zmc7sN29mcIMp8gvYplYPIQ==
+
 fastify-plugin@^3.0.0:
   version "3.0.1"
   resolved "https://registry.yarnpkg.com/fastify-plugin/-/fastify-plugin-3.0.1.tgz#79e84c29f401020f38b524f59f2402103fd21ed2"
   integrity sha512-qKcDXmuZadJqdTm6vlCqioEbyewF60b/0LOFCcYN1B6BIZGlYJumWWOYs70SFYLDAH4YqdE1cxH/RKMG7rFxgA==
-
-fastify-plugin@^4.0.0, fastify-plugin@^4.2.0, fastify-plugin@^4.5.1:
-  version "4.5.1"
-  resolved "https://registry.yarnpkg.com/fastify-plugin/-/fastify-plugin-4.5.1.tgz#44dc6a3cc2cce0988bc09e13f160120bbd91dbee"
-  integrity sha512-stRHYGeuqpEZTL1Ef0Ovr2ltazUT9g844X5z/zEBFLG8RYlpDiOCIG+ATvYEp+/zmc7sN29mcIMp8gvYplYPIQ==
 
 fastify@^4.26.0:
   version "4.26.0"
@@ -740,6 +752,13 @@ kareem@2.5.1:
   version "2.5.1"
   resolved "https://registry.yarnpkg.com/kareem/-/kareem-2.5.1.tgz#7b8203e11819a8e77a34b3517d3ead206764d15d"
   integrity sha512-7jFxRVm+jD+rkq3kY0iZDJfsO2/t4BBPeEb2qKn2lR/9KhuksYk5hxzfRYWMPV8P/x2d0kHD306YyWLzjjH+uA==
+
+layered-loader@^13.0.2:
+  version "13.0.2"
+  resolved "https://registry.yarnpkg.com/layered-loader/-/layered-loader-13.0.2.tgz#777149c93d537a67e16a9c6ada287b8ed889ffea"
+  integrity sha512-+jlUT92R+IaCCp31ElbeJDrKSTez116XO5G5dZcM0phfm+YgbHeimM2+DuT1vFVhMLP7SNE8al3GK/9ZzEzUwA==
+  dependencies:
+    toad-cache "^3.7.0"
 
 light-my-request@^5.11.0:
   version "5.11.0"
@@ -1185,7 +1204,7 @@ to-regex-range@^5.0.1:
   dependencies:
     is-number "^7.0.0"
 
-toad-cache@^3.3.0:
+toad-cache@^3.3.0, toad-cache@^3.7.0:
   version "3.7.0"
   resolved "https://registry.yarnpkg.com/toad-cache/-/toad-cache-3.7.0.tgz#b9b63304ea7c45ec34d91f1d2fa513517025c441"
   integrity sha512-/m8M+2BJUpoJdgAHoG+baCwBT+tf2VraSfkBgl0Y00qIWt41DJ8R5B8nsEw0I58YwF5IZH6z24/2TobDKnqSWw==
@@ -1244,6 +1263,11 @@ tsyringe@^4.8.0:
   integrity sha512-YB1FG+axdxADa3ncEtRnQCFq/M0lALGLxSZeVNbTU8NqhOVc51nnv2CISTcvc1kyv6EGPtXVr0v6lWeDxiijOA==
   dependencies:
     tslib "^1.9.3"
+
+typedi@^0.10.0:
+  version "0.10.0"
+  resolved "https://registry.yarnpkg.com/typedi/-/typedi-0.10.0.tgz#e8f9a5ee100b84addbdfb57fe90d8d9ed2a21dea"
+  integrity sha512-v3UJF8xm68BBj6AF4oQML3ikrfK2c9EmZUyLOfShpJuItAqVBHWP/KtpGinkSsIiP6EZyyb6Z3NXyW9dgS9X1w==
 
 typescript@^5.3.3:
   version "5.3.3"

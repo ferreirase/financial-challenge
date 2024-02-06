@@ -1,45 +1,44 @@
-declare module '@inaiat/fastify-di-plugin' {
-  interface Cradle {
-    userService: UserService;
-    userRepository: UserRepository;
-  }
-}; 
-
-import { fastifyDiPlugin } from '@inaiat/fastify-di-plugin';
-import { asClass } from "awilix";
+import { diContainer, fastifyAwilixPlugin } from "@fastify/awilix";
+import { AwilixContainer } from "awilix";
 import dotenv from 'dotenv';
 import fastify from 'fastify';
-import mongoose from 'mongoose';
-import UserRepository from "./modules/user/respository/user.repository";
-import UserService from "./modules/user/service/user.service";
+import { DependencyOverrides, registerDependencies } from "./infra/diConfig";
+import { getRoutes } from "./modules/routes";
 
 dotenv.config();
 
-const app = fastify();
+export type ConfigOverrides = {
+  diContainer?: AwilixContainer
+};
 
-app.register(fastifyDiPlugin, {
-  module: {
-    userService: asClass(UserService).singleton(),
-    userRepository: asClass(UserRepository).singleton(),
-  },
-});
+export async function getApp(
+  configOverrides: ConfigOverrides = {},
+  dependencyOverrides: DependencyOverrides = {},
+){
+  const app = fastify();
 
-app.get('/users', async function (req, res) {
-  return res.send({ users: await this.diContainer.resolve('userService').findAll() });
-});
-
-app.listen({ port: 3000} , async (err, _) => {
-  await mongoose.connect(process.env.MONGO_URL || '', {
-    dbName: process.env.MONGO_DBNAME
-  }).catch(err => {
-    console.error('Erro ao conectar com o Mongo:', err);
-    process.exit(1);
+  await app.register(fastifyAwilixPlugin, {
+    disposeOnClose: true,
+    asyncDispose: true,
+    asyncInit: true,
+    eagerInject: true,
+    disposeOnResponse: false,
   });
-  
-  if(err){
-    console.error('Erro ao iniciar o servidor:', err);
-    process.exit(1);
-  }
 
-  console.log('Servidor está rodando em http://localhost:3000');
-});
+  await registerDependencies(
+    configOverrides.diContainer ?? diContainer, 
+    { app }, 
+    dependencyOverrides,
+    {}
+  );
+
+  app.after(()=> {
+    const { routes } = getRoutes();
+
+    routes.forEach(route => app.withTypeProvider().route(route));
+  });
+
+  await app.ready(); 
+
+  return app;
+}

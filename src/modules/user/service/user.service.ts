@@ -6,7 +6,7 @@ interface UserServiceProps {
 
 export default class UserService {
   private userRepository: UserRepository;
-
+  
   constructor({ userRepository }: UserServiceProps) {
     this.userRepository = userRepository;
   }
