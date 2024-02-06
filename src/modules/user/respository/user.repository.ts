@@ -11,9 +11,9 @@ export default class UserMongoRepository implements IUserRepository {
   }
 
   async findOneByRegisterNumber(register_number: string) {
-    const userFound = await this.userModel.findOne({ register_number });
-
-    return userFound?.toObject();
+    return await this.userModel.findOne({ register_number }, {
+      projection: { password: 0 }
+    }) as IUser | undefined;
   }
 
   async findAll() {

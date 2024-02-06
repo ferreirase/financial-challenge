@@ -2,6 +2,7 @@ import type http from 'node:http';
 
 import type { RouteOptions } from 'fastify';
 
+import { getAccountRoutes } from './account/routes';
 import { getUserRoutes } from './user/routes';
 
 export type Routes = Array<
@@ -16,8 +17,9 @@ export function getRoutes(): {
   routes: Routes
 } {
   const { routes: userRoutes } = getUserRoutes();
+  const { routes: accountRoutes } = getAccountRoutes();
 
   return {
-    routes: [...userRoutes],
+    routes: [...userRoutes, ...accountRoutes],
   }
 };

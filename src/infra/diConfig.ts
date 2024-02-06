@@ -2,7 +2,8 @@ import type { AwilixContainer, Resolver } from 'awilix';
 import { Lifetime } from 'awilix';
 import type { FastifyInstance } from 'fastify';
 
-import { resolveUsersConfig, UsersModuleDependencies } from '../modules/user/diConfig';
+import { AccountModuleDependencies, resolveAccountConfig } from '../modules/account/diConfig';
+import { UsersModuleDependencies, resolveUsersConfig } from '../modules/user/diConfig';
 import { resolveCommonDiConfig } from "./commonDiConfig";
 
 export type ExternalDependencies = {
@@ -23,6 +24,7 @@ export async function registerDependencies(
   const diConfig: DiConfig = {
     ...await resolveCommonDiConfig(dependencies, options),
     ...resolveUsersConfig(),
+    ...resolveAccountConfig(),
   };
 
   diContainer.register(diConfig);
@@ -34,7 +36,7 @@ export async function registerDependencies(
 
 type DiConfig = Record<keyof Dependencies, Resolver<any>>;
 
-export type Dependencies = UsersModuleDependencies;
+export type Dependencies = UsersModuleDependencies & AccountModuleDependencies;
 
 declare module '@fastify/awilix' {
   interface Cradle extends Dependencies {}
