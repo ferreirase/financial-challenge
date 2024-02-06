@@ -1,9 +1,19 @@
+import fastifyMongodb from '@fastify/mongodb';
 import fastify from 'fastify';
 
 const server = fastify();
 
-server.get('/ping', async (_, response) => {
-  return response.code(200).send({ error: false, message: 'PASS WITH SUCCESS!' });
+server.register(fastifyMongodb, {
+  url: 'mongodb://admin:admin@localhost:27017',
+  database: 'doopay'
+});
+
+server.get('/users', async function (_, response) {
+  this.log.info('Get all users');
+
+  const users = this.mongo.db?.collection('users').find({}).toArray() || [];
+
+  return response.code(200).send({ users });
 });
 
 server.listen({ port: 3000 }, (err, address) => {

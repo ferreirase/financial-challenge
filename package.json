@@ -9,11 +9,17 @@
     "dev": "nodemon --watch src src/index.ts"
   },
   "dependencies": {
+    "@fastify/mongodb": "^8.0.0",
     "axios": "^1.6.7",
+    "bcryptjs": "^2.4.3",
     "dotenv": "^16.4.1",
-    "fastify": "^4.26.0"
+    "fastify": "^4.26.0",
+    "mongoose": "^8.1.1"
   },
   "devDependencies": {
+    "@types/bcryptjs": "^2.4.6",
+    "@types/mongodb": "^4.0.7",
+    "@types/mongoose": "^5.11.97",
     "@types/node": "^20.11.16",
     "nodemon": "^3.0.3",
     "ts-node": "^10.9.2",
