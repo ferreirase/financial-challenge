@@ -17,4 +17,10 @@ export default class AccountMongoRepository implements IAccountRepository {
   async findAll(): Promise<IAccount[] | []> {
     return await this.accountModel.find().toArray();
   }
+
+  updateBalance(account_number: string, new_balance: number): void {
+    this.accountModel.findOneAndUpdate({ account_number }, { 
+      $set: { balance: new_balance }
+    });
+  }
 }

@@ -1,6 +1,7 @@
 import { Collection } from 'mongodb';
 import { TransactionInjectableDependencies } from '../diConfig';
-import { ITransaction } from '../model/Transaction';
+import { CreateTransactionDTO } from "../dtos";
+import Transaction, { ITransaction } from '../model/Transaction';
 import ITransactionRepository from "./interface";
 
 export default class TransactionMongoRepository implements ITransactionRepository {
@@ -16,5 +17,9 @@ export default class TransactionMongoRepository implements ITransactionRepositor
 
   async findAll(): Promise<ITransaction[] | []> {
     return await this.transactionModel.find().toArray();
+  }
+  
+  create(data: CreateTransactionDTO) {
+    return new Transaction(data);
   }
 }

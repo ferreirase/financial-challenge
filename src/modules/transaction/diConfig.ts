@@ -7,6 +7,7 @@ import { SINGLETON_CONFIG } from '../../infra/diConfig';
 import { ITransaction } from './model/Transaction';
 
 import { CommonDependencies } from "../../infra/commonDiConfig";
+import { AccountObservable } from "../account/service/account.service";
 import { TransactionDataSource } from "./dataSource/transactionDataSource";
 import TransactionRepository from './repository/transaction.mongo.repository';
 import TransactionService from './service/transaction.service';
@@ -17,6 +18,7 @@ type TransactionDiConfig = Record<keyof TransactionModuleDependencies, Resolver<
 export type TransactionModuleDependencies = {
   transactionRepository: TransactionRepository
   transactionService: TransactionService
+  accountObservable: AccountObservable
   transactionLoader: Loader<ITransaction>
 };
 
@@ -31,6 +33,7 @@ export function resolveTransactionConfig(): TransactionDiConfig {
   return {
     transactionRepository: asClass(TransactionRepository, SINGLETON_CONFIG),
     transactionService: asClass(TransactionService, SINGLETON_CONFIG),
+    accountObservable: asClass(AccountObservable, SINGLETON_CONFIG),
 
     transactionLoader: asFunction(
       (deps: TransactionInjectableDependencies) => {
