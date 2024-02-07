@@ -1,18 +1,18 @@
 import type { DataSource } from 'layered-loader';
-import type { ITransaction } from '../model/Transaction';
+import type { Transaction } from '../entity/transaction.entity';
 
 import type { TransactionModuleDependencies } from '../diConfig';
-import type ITransactionRepository from '../repository/interface';
+import type TransactionImplementationRepository from '../repository/transaction.implementation.repository';
 
-export class TransactionDataSource implements DataSource<ITransaction> {
+export class TransactionDataSource implements DataSource<Transaction> {
   name = 'Transaction loader';
-  private transactionRepository: ITransactionRepository;
+  private transactionRepository: TransactionImplementationRepository;
 
   constructor({ transactionRepository }: TransactionModuleDependencies) {
     this.transactionRepository = transactionRepository;
   }
   
-  get(transaction_id: string): Promise<ITransaction | null | undefined> {
+  get(transaction_id: string) {
     return this.transactionRepository.findOneById(transaction_id);
   };
   

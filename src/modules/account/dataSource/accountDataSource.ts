@@ -1,18 +1,18 @@
 import type { DataSource } from 'layered-loader';
-import type { IAccount } from '../model/Account';
+import type { Account } from '../entity/account.entity';
 
 import type { AccountModuleDependencies } from '../diConfig';
-import type IAccountRepository from '../repository/interface';
+import AccountImplementationRepository from '../repository/account.implementation';
 
-export class AccountDataSource implements DataSource<IAccount> {
+export class AccountDataSource implements DataSource<Account> {
   name = 'Account loader';
-  private accountRepository: IAccountRepository;
+  private accountRepository: AccountImplementationRepository;
 
   constructor({ accountRepository }: AccountModuleDependencies) {
     this.accountRepository = accountRepository;
   }
   
-  get(register_number: string): Promise<IAccount | null | undefined> {
+  get(register_number: string) {
     return this.accountRepository.findOneByAccountNumber(register_number);
   };
   

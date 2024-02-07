@@ -1,12 +1,13 @@
 // Account.entity.ts
-import { Column, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, JoinColumn, OneToMany, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { v4 } from 'uuid';
+import { Transaction } from "../../transaction/entity/transaction.entity";
 import { User } from '../../user/entity/user.entity';
 
 @Entity('accounts')
 export class Account {
   @PrimaryGeneratedColumn('uuid')
-  private readonly id: string = v4();
+  id: string = v4();
 
   @Column()
   accountNumber: string;
@@ -14,7 +15,10 @@ export class Account {
   @Column()
   balance: number;
 
-  @OneToOne(() => User)
+  @OneToOne(() => User, (user) => user.account)
   @JoinColumn()
   user: User;
+
+  @OneToMany(() => Transaction, (transaction) => transaction)
+  transactions: typeof Transaction[];
 }

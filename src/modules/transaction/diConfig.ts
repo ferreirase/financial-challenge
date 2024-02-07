@@ -4,12 +4,12 @@ import type { LoaderConfig } from 'layered-loader';
 import { Loader } from 'layered-loader';
 
 import { SINGLETON_CONFIG } from '../../infra/diConfig';
-import { ITransaction } from './model/Transaction';
+import { Transaction } from './entity/transaction.entity';
 
 import { CommonDependencies } from "../../infra/commonDiConfig";
 import { AccountObservable } from "../account/service/account.service";
 import { TransactionDataSource } from "./dataSource/transactionDataSource";
-import TransactionRepository from './repository/transaction.mongo.repository';
+import TransactionRepository from './repository/transaction.implementation.repository';
 import TransactionService from './service/transaction.service';
 
 
@@ -19,7 +19,7 @@ export type TransactionModuleDependencies = {
   transactionRepository: TransactionRepository
   transactionService: TransactionService
   accountObservable: AccountObservable
-  transactionLoader: Loader<ITransaction>
+  transactionLoader: Loader<Transaction>
 };
 
 export type TransactionInjectableDependencies = TransactionModuleDependencies & CommonDependencies;
@@ -37,7 +37,7 @@ export function resolveTransactionConfig(): TransactionDiConfig {
 
     transactionLoader: asFunction(
       (deps: TransactionInjectableDependencies) => {
-        const config: LoaderConfig<ITransaction> = {
+        const config: LoaderConfig<Transaction> = {
           dataSources: [new TransactionDataSource(deps)],
         };
 

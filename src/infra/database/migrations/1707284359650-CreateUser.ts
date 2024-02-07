@@ -5,7 +5,7 @@ export class CreateUser1707284359650 implements MigrationInterface {
     public async up(queryRunner: QueryRunner): Promise<void> {
         // Criação da tabela User
         await queryRunner.createTable(new Table({
-            name: "user",
+            name: "users",
             columns: [
                 {
                     name: "id",
@@ -44,7 +44,7 @@ export class CreateUser1707284359650 implements MigrationInterface {
 
         // Criação da tabela Account
         await queryRunner.createTable(new Table({
-            name: "account",
+            name: "accounts",
             columns: [
                 {
                     name: "id",
@@ -68,18 +68,66 @@ export class CreateUser1707284359650 implements MigrationInterface {
             ]
         }), true);
 
+        await queryRunner.createTable(new Table({
+            name: "transactions",
+            columns: [
+                {
+                    name: "id",
+                    type: 'uuid',
+                    isPrimary: true,
+                    generationStrategy: 'uuid',
+                    default: 'uuid_generate_v4()',
+                },
+                {
+                    name: "amount",
+                    type: "float",
+                },
+                {
+                    name: "status",
+                    type: "varchar",
+                },
+                {
+                    name: "senderAccountId",
+                    type: "uuid",
+                },
+                {
+                    name: "receiverAccountId",
+                    type: "uuid",
+                },
+                {
+                    name: "createdAt",
+                    type: "timestamp",
+                    default: "CURRENT_TIMESTAMP"
+                },
+            ]
+        }), true);
+
         // Criação da chave estrangeira entre Account e User
-        await queryRunner.createForeignKey("account", new TableForeignKey({
+        await queryRunner.createForeignKey("accounts", new TableForeignKey({
             columnNames: ["userId"],
             referencedColumnNames: ["id"],
-            referencedTableName: "user",
+            referencedTableName: "users",
+            onDelete: "CASCADE" // Defina a ação de exclusão em cascata, se necessário
+        }));
+
+        await queryRunner.createForeignKey("transactions", new TableForeignKey({
+            columnNames: ["senderAccountId"],
+            referencedColumnNames: ["id"],
+            referencedTableName: "accounts",
+            onDelete: "CASCADE" // Defina a ação de exclusão em cascata, se necessário
+        }));
+
+        await queryRunner.createForeignKey("transactions", new TableForeignKey({
+            columnNames: ["receiverAccountId"],
+            referencedColumnNames: ["id"],
+            referencedTableName: "accounts",
             onDelete: "CASCADE" // Defina a ação de exclusão em cascata, se necessário
         }));
     }
 
     public async down(queryRunner: QueryRunner): Promise<void> {
-        await queryRunner.dropTable("account");
-        await queryRunner.dropTable("user");
+        await queryRunner.dropTable("accounts");
+        await queryRunner.dropTable("users");
+        await queryRunner.dropTable("transactions");
     }
-
 }

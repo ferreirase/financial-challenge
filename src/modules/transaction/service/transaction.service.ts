@@ -1,9 +1,9 @@
 import axios from 'axios';
 import CustomError from '../../../utils/customError';
-import { IAccount } from '../../account/model/Account';
+import { Account } from "../../account/entity/account.entity";
 import AccountService, { AccountObservable, IAccountUpdated } from "../../account/service/account.service";
 import { CreateTransactionDTO } from '../dtos/index';
-import TransactionRepository from '../repository/transaction.mongo.repository';
+import TransactionRepository from '../repository/transaction.implementation.repository';
 
 // ? CHAIN OF RESPONSABILITY
 interface TransactionServiceProps {
@@ -15,7 +15,7 @@ interface TransactionServiceProps {
 // Interface Handler
 interface Handler {
   setNext(handler: Handler): Handler;
-  handle(request: CreateTransactionDTO): Promise<boolean | IAccountUpdated>;
+  handle(request: CreateTransactionDTO): Promise<{error: boolean, message: string } | IAccountUpdated | boolean>;
 }
 
 abstract class BaseHandler implements Handler {
@@ -30,27 +30,25 @@ abstract class BaseHandler implements Handler {
     return handler;
   }
 
-  async handle(request: CreateTransactionDTO): Promise<boolean | IAccountUpdated> {
+  async handle(request: CreateTransactionDTO): Promise<{error: boolean, message: string } | IAccountUpdated | boolean> {
     if (this.nextHandler) {
-      return await this.nextHandler.handle(request) as boolean;
+      return await this.nextHandler.handle(request);
     }
 
     return true; // Se não houver próximo handler, retorna true por padrão
   }
 }
 
-type AccountWithUserInfo = IAccount & {
-  user: { type: string }
-};
-
 class AccountsValidator extends BaseHandler {
   public accountService?: AccountService;
-  private accountSender: AccountWithUserInfo | undefined;
+  private accountSender: Account | undefined;
+  private receiverAccount: Account;
   public transactionService?: TransactionService;
 
-  constructor(nextHandler?: Handler, accountSender?: AccountWithUserInfo | undefined, receiverAccount?: IAccount) {
+  constructor(nextHandler?: Handler, accountSender?: Account, receiverAccount?: Account) {
     super(nextHandler);
     this.accountSender = accountSender;
+    this.receiverAccount = receiverAccount as Account;
   }
 
   async handle(request: CreateTransactionDTO) {
@@ -60,14 +58,12 @@ class AccountsValidator extends BaseHandler {
 
     if (this.accountSender?.user && this.accountSender?.user?.type === 'PJ') {
       console.log('Conta PJ não pode fazer transferência!');
-      // throw new CustomError('Conta PJ não pode fazer transferência!', 400);
-      return false;
+      throw new CustomError('Conta PJ não pode fazer transferência!', 400);
     }
 
     if((this.accountSender && this.accountSender.balance <= 0) || (this.accountSender && this.accountSender.balance < request.amount)){
       console.log('Saldo insuficiente na conta de saída!');
-      // throw new CustomError('Saldo insuficiente na conta de saída', 400);
-      return false;
+      throw new CustomError('Saldo insuficiente na conta de saída!', 400);
     }
 
     console.log('Saldo suficiente.');
@@ -86,49 +82,39 @@ class ExternalServiceChecker extends BaseHandler {
 
       if (!data.approve) {
         console.log('Serviço autorizador: Transferência negada.');
-
-        return false;
+        throw new CustomError('Serviço autorizador: Transferência negada.', 400);
       } 
 
       console.log('Serviço autorizador: Transferência autorizada.');
       return await super.handle(request);
     } catch (error) {
       console.log('Erro ao consultar serviço autorizador:', error);
-
-      return false;
+      return { error: true, message: `Erro ao consultar serviço autorizador: ${error}` };
     }
   }
 }
 
 class TransferExecutor extends BaseHandler {
-  private readonly accountSender: IAccount;
-  private readonly accountReceiver: IAccount;
+  private readonly accountSender: Account;
+  private readonly accountReceiver: Account;
   public transactionService?: TransactionService;
 
-  constructor(accountSender: IAccount, accountReceiver: IAccount){
+  constructor(accountSender: Account, accountReceiver: Account){
     super();
     this.accountSender = accountSender;
     this.accountReceiver = accountReceiver;
   }
 
-  async handle({ amount }: CreateTransactionDTO) {
+  async handle(data: CreateTransactionDTO) {
     console.log('Executando transferência...');    
 
     console.log('Transferência concluída.');
 
-    await this.transactionService?.executeCreation(
-      this.accountSender, this.accountReceiver, amount, 'completed'
-    );
-
+    // salvar transferência no banco de dados
     return { 
-      sender: {
-        account_number: this.accountSender.account_number,
-        balance: this.accountSender.balance - amount
-      }, 
-      receiver:  {
-        account_number: this.accountReceiver.account_number,
-        balance: this.accountReceiver.balance + amount
-      },
+      sender: this.accountSender, 
+      receiver: this.accountReceiver,
+      amount: data.amount,
     };
   };
 }
@@ -170,12 +156,10 @@ export default class TransactionService {
 
     accountsValidator.setNext(externalServiceChecker).setNext(transferExecutor);
 
-    const result = await accountsValidator.handle(transaction) as unknown as IAccountUpdated;
+    const result = await accountsValidator.handle(transaction) as IAccountUpdated & { error: boolean, message: string };
     
-    if(!result){
-      await this.executeCreation(accountSender, accountReceiver, amount, 'failed');
-
-      throw new CustomError('Deu ruim aqui dentro', 400);
+    if(result && result.error){
+      throw new CustomError(result.message, 400);
     }
     
     this.accountObservable.setBalance(result);
@@ -183,7 +167,7 @@ export default class TransactionService {
     return { transaction_status: 'success' };
   }
 
-  async executeCreation(senderAccount: IAccount, receiverAccount: IAccount, amount: number, status: string){
-    await this.transactionRepository.create(senderAccount, receiverAccount, amount, status);
+  async execute(data: CreateTransactionDTO){
+    console.log('funfou!', data);
   }
 }

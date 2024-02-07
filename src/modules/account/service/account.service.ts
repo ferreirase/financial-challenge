@@ -1,27 +1,24 @@
-import { Types } from "mongoose";
-import { IAccount } from "../model/Account";
-import AccountRepository from '../repository/account.mongo.repository';
+import { Account } from '../entity/account.entity';
+import AccountImplementationRepository from '../repository/account.implementation';
 
 interface AccountServiceProps {
-  accountRepository: AccountRepository;
+  accountRepository: AccountImplementationRepository;
 }
 
 export interface AccountObserver {
-  balanceUpdate(data: IAccountUpdated): void;
+  balanceUpdate(data: IAccountUpdated): Promise<void>;
 }
 
 export interface IAccountUpdated {
-  sender: Pick<IAccount, 'account_number' | 'balance'>;
-  receiver: Pick<IAccount, 'account_number' | 'balance'>;
+  sender: Account;
+  receiver: Account;
+  amount: number;
 }
 
 export class AccountObservable {
   private observer: AccountObserver;
   
-  private account_updated: IAccountUpdated = { 
-    sender: { balance: 0, account_number: ''},
-    receiver: { balance: 0, account_number: ''}
-  };
+  private account_updated: IAccountUpdated;
 
   constructor(observer: AccountObserver){
     this.observer = observer;
@@ -45,8 +42,8 @@ export class AccountObservable {
   }
 }
 
-export default class AccountService implements AccountObserver{
-  private accountRepository: AccountRepository;
+export default class AccountService implements AccountObserver {
+  private accountRepository: AccountImplementationRepository;
   
   constructor({ accountRepository }: AccountServiceProps) {
     this.accountRepository = accountRepository;
@@ -56,14 +53,9 @@ export default class AccountService implements AccountObserver{
     return await this.accountRepository.findOneByAccountNumber(account_number);
   }
 
-  async findByAccountId(account_id: Types.ObjectId) {
-    return await this.accountRepository.findOneByAccountId(account_id);
-  }
+  async balanceUpdate(data: IAccountUpdated): Promise<void> {
+    const { sender, receiver, amount } = data;
 
-  balanceUpdate(data: IAccountUpdated): void {
-    const { sender, receiver } = data;
-
-    this.accountRepository.updateBalance(sender.account_number, sender.balance);
-    this.accountRepository.updateBalance(receiver.account_number, receiver.balance);
+    await this.accountRepository.updateBalance(sender, receiver, amount);
   }
 }

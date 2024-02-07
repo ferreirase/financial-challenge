@@ -3,14 +3,14 @@ import { User } from "../entity/user.entity";
 
 @EntityRepository(User)
 export default class UserRepositoryImplementation {
-  private readonly test; 
+  private readonly repo; 
 
   constructor(){
-    this.test = getRepository(User);
+    this.repo = getRepository(User);
   }
 
   async findOneByRegisterNumber(register_number: string) {
-    return await this.test.findOne({
+    return await this.repo.findOne({
        where: {
         register_number,
        }
@@ -18,6 +18,6 @@ export default class UserRepositoryImplementation {
   }
 
   async findAll() {
-    return await this.test.find({});
+    return await this.repo.find({});
   }
 }

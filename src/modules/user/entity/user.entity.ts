@@ -1,6 +1,7 @@
 import bcrypt from 'bcryptjs';
-import { BeforeInsert, Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { BeforeInsert, Column, Entity, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { v4 } from 'uuid';
+import { Account } from "../../account/entity/account.entity";
 
 export type UserType = 'PF' | 'PJ';
 
@@ -27,6 +28,9 @@ export class User {
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   createdAt: Date = new Date();
   
+  @OneToOne(() => Account, (account) => account.user)
+  account: Account;
+
   @BeforeInsert()
   async hashPassword() {
     this.password = await bcrypt.hash(this.password, 10);
