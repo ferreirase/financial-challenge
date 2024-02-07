@@ -9,9 +9,10 @@
     "outDir": "./dist",
     "rootDir": "./src",
     "experimentalDecorators": true,
-    "emitDecoratorMetadata": true
+    "emitDecoratorMetadata": true,
+    "strictPropertyInitialization": false
   },
   "watchDirectory": "./src",
-  "include": ["src/**/*.ts"],
+  "include": ["src/**/*.ts", "src/infra/database/dataSource.js"],
   "exclude": ["node_modules"]
 }

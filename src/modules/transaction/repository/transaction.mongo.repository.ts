@@ -1,25 +1,38 @@
-import { Collection } from 'mongodb';
+import { IAccount } from "../../account/model/Account";
 import { TransactionInjectableDependencies } from '../diConfig';
-import { CreateTransactionDTO } from "../dtos";
 import Transaction, { ITransaction } from '../model/Transaction';
 import ITransactionRepository from "./interface";
 
 export default class TransactionMongoRepository implements ITransactionRepository {
-  private readonly transactionModel: Collection<ITransaction>;
+  private readonly transactionModelConnection;
 
-  constructor({ mongo }: TransactionInjectableDependencies) {
-    this.transactionModel = mongo.db(process.env.MONGO_DBNAME).collection<ITransaction>('transactions');
+  constructor({ mongooseConnection }: TransactionInjectableDependencies) {
+    // this.transactionModel = mongo.db(process.env.MONGO_DBNAME).collection<ITransaction>('transactions');
+    this.transactionModelConnection = mongooseConnection;
   }
 
   async findOneById(transaction_id: string) {
-    return await this.transactionModel.findOne({ id: transaction_id }) as ITransaction | undefined;
+    return await Transaction.findOne({ id: transaction_id });
   }
 
   async findAll(): Promise<ITransaction[] | []> {
-    return await this.transactionModel.find().toArray();
+    return await Transaction.find();
   }
   
-  create(data: CreateTransactionDTO) {
-    return new Transaction(data);
+  async create(senderAccount: IAccount, receiverAccount: IAccount, amount: number, status: string) {
+    this.transactionModelConnection.once('connected', () => {
+      console.log('MONGO CONECTADO!');
+    });
+
+    const transactionCreated = await Transaction.create([
+      {
+        sender: senderAccount, 
+        receiver: receiverAccount,
+        amount,
+        status,
+      }
+    ]);
+
+    return JSON.parse(JSON.stringify(transactionCreated));
   }
 }

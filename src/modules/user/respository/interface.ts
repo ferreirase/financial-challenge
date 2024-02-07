@@ -1,6 +1,6 @@
-import { IUser } from "../model/User";
+import { User } from "../entity/user.entity";
 
 export default interface IUserRepository {
-  findOneByRegisterNumber(register_number: string): Promise<IUser | undefined>;
-  findAll(): Promise<Array<IUser> | []>;
+  findOneByRegisterNumber(register_number: string): Promise<User | null>;
+  findAll(): Promise<Array<User> | []>;
 }

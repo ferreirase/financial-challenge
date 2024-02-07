@@ -1,3 +1,4 @@
+import { Types } from "mongoose";
 import { IAccount } from "../model/Account";
 import AccountRepository from '../repository/account.mongo.repository';
 
@@ -53,6 +54,10 @@ export default class AccountService implements AccountObserver{
 
   async findByAccountNumber(account_number: string) {
     return await this.accountRepository.findOneByAccountNumber(account_number);
+  }
+
+  async findByAccountId(account_id: Types.ObjectId) {
+    return await this.accountRepository.findOneByAccountId(account_id);
   }
 
   balanceUpdate(data: IAccountUpdated): void {

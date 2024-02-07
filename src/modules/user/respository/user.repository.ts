@@ -1,24 +1,23 @@
-import { Collection } from 'mongodb';
-import { UsersInjectableDependencies } from '../diConfig';
-import { IUser } from '../model/User';
-import IUserRepository from "./interface";
+import { EntityRepository, getRepository } from 'typeorm';
+import { User } from "../entity/user.entity";
 
-export default class UserMongoRepository implements IUserRepository {
-  private readonly userModel: Collection<IUser>;
+@EntityRepository(User)
+export default class UserRepositoryImplementation {
+  private readonly test; 
 
-  constructor({ mongo }: UsersInjectableDependencies) {
-    this.userModel = mongo.db(process.env.MONGO_DBNAME).collection<IUser>('users');
+  constructor(){
+    this.test = getRepository(User);
   }
 
   async findOneByRegisterNumber(register_number: string) {
-    return await this.userModel.findOne({ register_number }, {
-      projection: { password: 0 }
-    }) as IUser | undefined;
+    return await this.test.findOne({
+       where: {
+        register_number,
+       }
+    })
   }
 
   async findAll() {
-    return await this.userModel.find({}, { 
-      projection: { password: 0 }
-     }).toArray();
+    return await this.test.find({});
   }
 }

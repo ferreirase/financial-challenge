@@ -1,4 +1,3 @@
-import mongoose from "mongoose";
 import { getApp } from './app';
 
 async function start() {
@@ -6,14 +5,7 @@ async function start() {
 
   const app = await getApp();
 
-  app.listen({ port: 3000} , async (err, _) => {
-    await mongoose.connect(process.env.MONGO_URL || '', {
-      dbName: process.env.MONGO_DBNAME
-    }).catch(err => {
-      console.error('Erro ao conectar com o Mongo:', err);
-      process.exit(1);
-    });
-    
+  app.listen({ port: 3000} , async (err, _) => {    
     if(err){
       console.error('Erro ao iniciar o servidor:', err);
       process.exit(1);

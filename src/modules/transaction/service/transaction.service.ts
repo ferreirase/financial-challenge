@@ -39,15 +39,18 @@ abstract class BaseHandler implements Handler {
   }
 }
 
+type AccountWithUserInfo = IAccount & {
+  user: { type: string }
+};
+
 class AccountsValidator extends BaseHandler {
   public accountService?: AccountService;
-  private readonly accountSender: IAccount | undefined;
-  private readonly receiverAccount: IAccount | undefined;
+  private accountSender: AccountWithUserInfo | undefined;
+  public transactionService?: TransactionService;
 
-  constructor(nextHandler?: Handler, accountSender?: IAccount, receiverAccount?: IAccount) {
+  constructor(nextHandler?: Handler, accountSender?: AccountWithUserInfo | undefined, receiverAccount?: IAccount) {
     super(nextHandler);
     this.accountSender = accountSender;
-    this.receiverAccount = receiverAccount;
   }
 
   async handle(request: CreateTransactionDTO) {
@@ -55,15 +58,16 @@ class AccountsValidator extends BaseHandler {
     // Lógica para validar saldo do remetente
     console.log('Validando saldo do remetente...');
 
-    // !todo - verificação do tipo de usuário
-    // if (accountSender.user && accountSender.user) {
-    //   console.log('Conta de entrada não encontrada!');
-    //   return false;
-    // }
+    if (this.accountSender?.user && this.accountSender?.user?.type === 'PJ') {
+      console.log('Conta PJ não pode fazer transferência!');
+      // throw new CustomError('Conta PJ não pode fazer transferência!', 400);
+      return false;
+    }
 
     if((this.accountSender && this.accountSender.balance <= 0) || (this.accountSender && this.accountSender.balance < request.amount)){
       console.log('Saldo insuficiente na conta de saída!');
-      throw new CustomError('Saldo insuficiente na conta de saída', 400);
+      // throw new CustomError('Saldo insuficiente na conta de saída', 400);
+      return false;
     }
 
     console.log('Saldo suficiente.');
@@ -72,6 +76,8 @@ class AccountsValidator extends BaseHandler {
 }
 
 class ExternalServiceChecker extends BaseHandler {
+  public transactionService?: TransactionService;
+
   async handle(request: CreateTransactionDTO) {
     // Lógica para consultar serviço autorizador externo
     console.log('Consultando serviço autorizador externo...');
@@ -80,6 +86,7 @@ class ExternalServiceChecker extends BaseHandler {
 
       if (!data.approve) {
         console.log('Serviço autorizador: Transferência negada.');
+
         return false;
       } 
 
@@ -87,6 +94,7 @@ class ExternalServiceChecker extends BaseHandler {
       return await super.handle(request);
     } catch (error) {
       console.log('Erro ao consultar serviço autorizador:', error);
+
       return false;
     }
   }
@@ -95,6 +103,7 @@ class ExternalServiceChecker extends BaseHandler {
 class TransferExecutor extends BaseHandler {
   private readonly accountSender: IAccount;
   private readonly accountReceiver: IAccount;
+  public transactionService?: TransactionService;
 
   constructor(accountSender: IAccount, accountReceiver: IAccount){
     super();
@@ -106,6 +115,10 @@ class TransferExecutor extends BaseHandler {
     console.log('Executando transferência...');    
 
     console.log('Transferência concluída.');
+
+    await this.transactionService?.executeCreation(
+      this.accountSender, this.accountReceiver, amount, 'completed'
+    );
 
     return { 
       sender: {
@@ -139,16 +152,16 @@ export default class TransactionService {
     this.accountObservable.bind(this.accountService);
     
     const transaction = new CreateTransactionDTO(senderAccountNumber, receiverAccountNumber, amount, 'pending'); 
-    
+
     const accountSender = await this.accountService?.findByAccountNumber(senderAccountNumber);
     const accountReceiver = await this.accountService?.findByAccountNumber(receiverAccountNumber);
 
     if(!accountSender){
-      throw new Error('Sender account not found!');
+      throw new CustomError('Sender account not found!', 400);
     }
 
     if(!accountReceiver){
-      throw new Error('Receiver account not found!');
+      throw new CustomError('Receiver account not found!', 400);
     }
 
     const accountsValidator = new AccountsValidator(undefined, accountSender, accountReceiver);
@@ -159,8 +172,18 @@ export default class TransactionService {
 
     const result = await accountsValidator.handle(transaction) as unknown as IAccountUpdated;
     
+    if(!result){
+      await this.executeCreation(accountSender, accountReceiver, amount, 'failed');
+
+      throw new CustomError('Deu ruim aqui dentro', 400);
+    }
+    
     this.accountObservable.setBalance(result);
 
-    return { transaction_status: 'success'};
+    return { transaction_status: 'success' };
+  }
+
+  async executeCreation(senderAccount: IAccount, receiverAccount: IAccount, amount: number, status: string){
+    await this.transactionRepository.create(senderAccount, receiverAccount, amount, status);
   }
 }

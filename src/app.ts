@@ -2,6 +2,8 @@ import { diContainer, fastifyAwilixPlugin } from "@fastify/awilix";
 import { AwilixContainer } from "awilix";
 import dotenv from 'dotenv';
 import fastify from 'fastify';
+import fastifyTypeormPlugin from "fastify-typeorm-plugin";
+import { getConfig } from './infra/database/dataSource';
 import { DependencyOverrides, registerDependencies } from "./infra/diConfig";
 import { getRoutes } from "./modules/routes";
 
@@ -24,6 +26,8 @@ export async function getApp(
     eagerInject: true,
     disposeOnResponse: false,
   });
+
+  await app.register(fastifyTypeormPlugin, getConfig());
 
   await registerDependencies(
     configOverrides.diContainer ?? diContainer, 
