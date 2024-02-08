@@ -21,3 +21,12 @@ export const createTransaction = async (
     throw new Error('Erro desconhecido!');
   }
 };
+
+
+export const getAllTransactions = async (
+  req: FastifyRequest, res: FastifyReply
+) => {
+  const { transactionService } = req.diScope.cradle;
+
+  return res.send({ transactions: await transactionService.getAllTransactions() });
+}

@@ -1,6 +1,6 @@
 import type { Routes } from '../../routes';
 
-import { createTransaction } from '../controller/transaction.controller';
+import { createTransaction, getAllTransactions } from '../controller/transaction.controller';
 
 export const getTransactionRoutes = (): {
   routes: Routes
@@ -11,6 +11,11 @@ export const getTransactionRoutes = (): {
         method: 'POST',
         url: `/transactions`,
         handler: createTransaction,
+      },
+      {
+        method: 'GET',
+        url: `/transactions`,
+        handler: getAllTransactions,
       },
     ],
   }

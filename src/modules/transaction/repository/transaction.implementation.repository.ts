@@ -21,14 +21,16 @@ export default class TransactionImplementationRepository {
   }
   
   async create(senderAccount: Account, receiverAccount: Account, amount: number, status: string) {
-    const newTransaction = new Transaction();
-
-    newTransaction.senderAccount = senderAccount;
-    newTransaction.receiverAccount = receiverAccount;
-    newTransaction.amount = amount;
-    newTransaction.status = status;
-
-    await this.repo.save(newTransaction);
+    const newTransaction = await this.repo.createQueryBuilder()
+      .insert()
+      .into(Transaction)
+      .values({
+        senderAccount: { id: senderAccount.id },
+        receiverAccount: { id: receiverAccount.id },
+        amount,
+        status,
+        createdAt: new Date()
+      }).execute();
 
     return newTransaction;
   }

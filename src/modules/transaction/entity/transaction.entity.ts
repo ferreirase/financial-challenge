@@ -13,13 +13,19 @@ export class Transaction {
   @Column()
   status: string;
 
+  @Column({ type: 'uuid' })
+  senderAccountId: string;
+
+  @Column({ type: 'uuid' })
+  receiverAccountId: string;
+
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   createdAt: Date = new Date();
 
-  @ManyToOne(() => Account, (account) => account.transactions)
+  @ManyToOne(() => Account, (account) => account.sentTransactions)
   senderAccount: Account;
 
   // Relacionamento muitos para um com Account (destinatário)
-  @ManyToOne(() => Account, (account) => account.transactions)
+  @ManyToOne(() => Account, (account) => account.receivedTransactions)
   receiverAccount: Account;
 }

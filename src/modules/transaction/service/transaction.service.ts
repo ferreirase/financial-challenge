@@ -84,7 +84,7 @@ class ExternalServiceChecker extends BaseHandler {
       } 
 
       console.log('Serviço autorizador: Transferência autorizada.');
-      return await super.handle(request);
+      return await super.handle({...request, status: 'completed'});
     } catch (error) {
       console.log('Erro ao consultar serviço autorizador:', error);
       return { error: true, message: `Erro ao consultar serviço autorizador: ${error}` };
@@ -167,5 +167,9 @@ export default class TransactionService {
     this.accountObservable.setBalance(result);
 
     return { transaction_status: 'success' };
+  }
+
+  async getAllTransactions(){
+    return await this.transactionRepository.findAll();
   }
 }

@@ -86,11 +86,11 @@ export class CreateTables1707407931617 implements MigrationInterface {
                     type: "varchar",
                 },
                 {
-                    name: "senderAccount",
+                    name: "senderAccountId",
                     type: "uuid",
                 },
                 {
-                    name: "receiverAccount",
+                    name: "receiverAccountId",
                     type: "uuid",
                 },
                 {
@@ -107,23 +107,20 @@ export class CreateTables1707407931617 implements MigrationInterface {
             referencedColumnNames: ["id"],
             referencedTableName: "users",
             onDelete: "CASCADE", // Defina a ação de exclusão em cascata, se necessário
-            name: 'user'
         }));
 
         await queryRunner.createForeignKey("transactions", new TableForeignKey({
-            columnNames: ["senderAccount"],
+            columnNames: ["senderAccountId"],
             referencedColumnNames: ["id"],
             referencedTableName: "accounts",
             onDelete: "CASCADE", // Defina a ação de exclusão em cascata, se necessário
-            name: "senderAccountId"
         }));
 
         await queryRunner.createForeignKey("transactions", new TableForeignKey({
-            columnNames: ["receiverAccount"],
+            columnNames: ["receiverAccountId"],
             referencedColumnNames: ["id"],
             referencedTableName: "accounts",
             onDelete: "CASCADE", // Defina a ação de exclusão em cascata, se necessário
-            name: "receiverAccountId"
         }));
     }
 

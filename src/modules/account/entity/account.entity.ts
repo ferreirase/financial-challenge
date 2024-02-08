@@ -19,6 +19,8 @@ export class Account {
   user: User;
 
   @OneToMany(() => Transaction, (transaction) => transaction.senderAccount)
+  sentTransactions: typeof Transaction[];
+
   @OneToMany(() => Transaction, (transaction) => transaction.receiverAccount)
-  transactions: typeof Transaction[];
+  receivedTransactions: typeof Transaction[];
 }
