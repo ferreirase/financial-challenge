@@ -16,10 +16,10 @@ export class Transaction {
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   createdAt: Date = new Date();
 
-  @ManyToOne(() => Account)
-  sender: Account;
+  @ManyToOne(() => Account, (account) => account.transactions)
+  senderAccount: Account;
 
   // Relacionamento muitos para um com Account (destinatário)
-  @ManyToOne(() => Account)
-  receiver: Account;
+  @ManyToOne(() => Account, (account) => account.transactions)
+  receiverAccount: Account;
 }

@@ -1,6 +1,6 @@
 import { MigrationInterface, QueryRunner, Table, TableForeignKey } from "typeorm";
 
-export class CreateUser1707284359650 implements MigrationInterface {
+export class CreateTables1707354811792 implements MigrationInterface {
 
     public async up(queryRunner: QueryRunner): Promise<void> {
         // Criação da tabela User
@@ -62,7 +62,7 @@ export class CreateUser1707284359650 implements MigrationInterface {
                     type: "float",
                 },
                 {
-                    name: "userId",
+                    name: "user",
                     type: "uuid",
                 },
             ]
@@ -87,11 +87,11 @@ export class CreateUser1707284359650 implements MigrationInterface {
                     type: "varchar",
                 },
                 {
-                    name: "senderAccountId",
+                    name: "senderAccount",
                     type: "uuid",
                 },
                 {
-                    name: "receiverAccountId",
+                    name: "receiverAccount",
                     type: "uuid",
                 },
                 {
@@ -104,24 +104,27 @@ export class CreateUser1707284359650 implements MigrationInterface {
 
         // Criação da chave estrangeira entre Account e User
         await queryRunner.createForeignKey("accounts", new TableForeignKey({
-            columnNames: ["userId"],
+            columnNames: ["user"],
             referencedColumnNames: ["id"],
             referencedTableName: "users",
-            onDelete: "CASCADE" // Defina a ação de exclusão em cascata, se necessário
+            onDelete: "CASCADE", // Defina a ação de exclusão em cascata, se necessário
+            name: 'user'
         }));
 
         await queryRunner.createForeignKey("transactions", new TableForeignKey({
-            columnNames: ["senderAccountId"],
+            columnNames: ["senderAccount"],
             referencedColumnNames: ["id"],
             referencedTableName: "accounts",
-            onDelete: "CASCADE" // Defina a ação de exclusão em cascata, se necessário
+            onDelete: "CASCADE", // Defina a ação de exclusão em cascata, se necessário
+            name: "senderAccountId"
         }));
 
         await queryRunner.createForeignKey("transactions", new TableForeignKey({
-            columnNames: ["receiverAccountId"],
+            columnNames: ["receiverAccount"],
             referencedColumnNames: ["id"],
             referencedTableName: "accounts",
-            onDelete: "CASCADE" // Defina a ação de exclusão em cascata, se necessário
+            onDelete: "CASCADE", // Defina a ação de exclusão em cascata, se necessário
+            name: "receiverAccountId"
         }));
     }
 

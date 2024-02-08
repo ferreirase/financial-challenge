@@ -3,7 +3,7 @@ import CustomError from '../../../utils/customError';
 import { Account } from "../../account/entity/account.entity";
 import AccountService, { AccountObservable, IAccountUpdated } from "../../account/service/account.service";
 import { CreateTransactionDTO } from '../dtos/index';
-import TransactionRepository from '../repository/transaction.implementation.repository';
+import { default as TransactionImplementationRepository, default as TransactionRepository } from '../repository/transaction.implementation.repository';
 
 // ? CHAIN OF RESPONSABILITY
 interface TransactionServiceProps {
@@ -42,13 +42,11 @@ abstract class BaseHandler implements Handler {
 class AccountsValidator extends BaseHandler {
   public accountService?: AccountService;
   private accountSender: Account | undefined;
-  private receiverAccount: Account;
   public transactionService?: TransactionService;
 
-  constructor(nextHandler?: Handler, accountSender?: Account, receiverAccount?: Account) {
+  constructor(nextHandler?: Handler, accountSender?: Account) {
     super(nextHandler);
     this.accountSender = accountSender;
-    this.receiverAccount = receiverAccount as Account;
   }
 
   async handle(request: CreateTransactionDTO) {
@@ -98,11 +96,13 @@ class TransferExecutor extends BaseHandler {
   private readonly accountSender: Account;
   private readonly accountReceiver: Account;
   public transactionService?: TransactionService;
+  private readonly transactionRepository: TransactionImplementationRepository;
 
-  constructor(accountSender: Account, accountReceiver: Account){
+  constructor(accountSender: Account, accountReceiver: Account, transactionRepository: TransactionImplementationRepository){
     super();
     this.accountSender = accountSender;
     this.accountReceiver = accountReceiver;
+    this.transactionRepository = transactionRepository;
   }
 
   async handle(data: CreateTransactionDTO) {
@@ -110,7 +110,9 @@ class TransferExecutor extends BaseHandler {
 
     console.log('Transferência concluída.');
 
+    await this.transactionRepository.create(this.accountSender, this.accountReceiver, data.amount, data.status);
     // salvar transferência no banco de dados
+
     return { 
       sender: this.accountSender, 
       receiver: this.accountReceiver,
@@ -150,9 +152,9 @@ export default class TransactionService {
       throw new CustomError('Receiver account not found!', 400);
     }
 
-    const accountsValidator = new AccountsValidator(undefined, accountSender, accountReceiver);
+    const accountsValidator = new AccountsValidator(undefined, accountSender);
     const externalServiceChecker = new ExternalServiceChecker();
-    const transferExecutor = new TransferExecutor(accountSender, accountReceiver);
+    const transferExecutor = new TransferExecutor(accountSender, accountReceiver, this.transactionRepository);
 
     accountsValidator.setNext(externalServiceChecker).setNext(transferExecutor);
 
@@ -165,9 +167,5 @@ export default class TransactionService {
     this.accountObservable.setBalance(result);
 
     return { transaction_status: 'success' };
-  }
-
-  async execute(data: CreateTransactionDTO){
-    console.log('funfou!', data);
   }
 }

@@ -23,8 +23,8 @@ export default class TransactionImplementationRepository {
   async create(senderAccount: Account, receiverAccount: Account, amount: number, status: string) {
     const newTransaction = new Transaction();
 
-    newTransaction.sender = senderAccount;
-    newTransaction.receiver = receiverAccount;
+    newTransaction.senderAccount = senderAccount;
+    newTransaction.receiverAccount = receiverAccount;
     newTransaction.amount = amount;
     newTransaction.status = status;
 

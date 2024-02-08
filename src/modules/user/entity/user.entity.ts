@@ -5,7 +5,7 @@ import { Account } from "../../account/entity/account.entity";
 
 export type UserType = 'PF' | 'PJ';
 
-@Entity({ name: 'user'})
+@Entity({ name: 'users'})
 export class User {
   @PrimaryGeneratedColumn('uuid')
   private readonly id: string = v4();
