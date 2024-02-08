@@ -12,7 +12,7 @@ export function getConfig() {
         password: 'docker',
         database: 'doopay',
         synchronize: false,
-        migrations: ['src/infra/migrations/**/*.ts'],
+        migrations: ['src/infra/database/migrations/**/*.ts'],
         entities: ['src/modules/**/entity/*.ts'],
     } as DataSourceOptions;
 }; 

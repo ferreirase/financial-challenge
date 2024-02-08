@@ -7,7 +7,7 @@
   "database": "doopay",
   "entities": ["src/modules/**/entity/*.ts"],
   "migrations": ["src/infra/database/migrations/**/*.ts"],
-  "synchronize": true,
+  "synchronize": false,
   "cli": {
     "entitiesDir": "src/modules/**/entity", "migrationsDir": "src/infra/database/migrations/**/*.ts"
   }

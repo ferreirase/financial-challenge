@@ -2,7 +2,7 @@ import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { v4 } from 'uuid';
 import { Account } from '../../account/entity/account.entity';
 
-@Entity('transactions')
+@Entity('transactions', { synchronize: false })
 export class Transaction {
   @PrimaryGeneratedColumn('uuid')
   id: string = v4();

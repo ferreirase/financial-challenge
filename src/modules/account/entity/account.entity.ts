@@ -4,7 +4,7 @@ import { v4 } from 'uuid';
 import { Transaction } from "../../transaction/entity/transaction.entity";
 import { User } from '../../user/entity/user.entity';
 
-@Entity('accounts')
+@Entity('accounts', { synchronize: false })
 export class Account {
   @PrimaryGeneratedColumn('uuid')
   id: string = v4();

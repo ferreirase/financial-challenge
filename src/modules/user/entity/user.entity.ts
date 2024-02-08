@@ -5,10 +5,10 @@ import { Account } from "../../account/entity/account.entity";
 
 export type UserType = 'PF' | 'PJ';
 
-@Entity({ name: 'users'})
+@Entity({ name: 'users', synchronize: false })
 export class User {
   @PrimaryGeneratedColumn('uuid')
-  private readonly id: string = v4();
+  id: string = v4();
 
   @Column()
   type: UserType;
