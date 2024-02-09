@@ -1,5 +1,5 @@
 // Account.entity.ts
-import { Column, Entity, OneToMany, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, JoinColumn, OneToMany, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { v4 } from 'uuid';
 import { Transaction } from "../../transaction/entity/transaction.entity";
 import { User } from '../../user/entity/user.entity';
@@ -15,7 +15,11 @@ export class Account {
   @Column()
   balance: number;
 
+  @Column({ type: 'uuid' })
+  userId: string;
+
   @OneToOne(() => User, (user) => user.account)
+  @JoinColumn()
   user: User;
 
   @OneToMany(() => Transaction, (transaction) => transaction.senderAccount)

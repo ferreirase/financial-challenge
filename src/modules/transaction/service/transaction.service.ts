@@ -159,7 +159,7 @@ export default class TransactionService {
     accountsValidator.setNext(externalServiceChecker).setNext(transferExecutor);
 
     const result = await accountsValidator.handle(transaction) as IAccountUpdated & { error: boolean, message: string };
-    
+
     if(result && result.error){
       throw new CustomError(result.message, 400);
     }

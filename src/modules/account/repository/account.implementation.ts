@@ -12,7 +12,7 @@ export default class AccountImplementationRepository {
   async findOneByAccountNumber(account_number: string) {
     return await this.repo.findOne({
       where: { accountNumber: account_number },
-      relations: { sentTransactions: true, receivedTransactions: true }
+      relations: { user: true, sentTransactions: true, receivedTransactions: true }
     });
   }
 

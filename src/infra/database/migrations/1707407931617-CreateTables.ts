@@ -61,7 +61,7 @@ export class CreateTables1707407931617 implements MigrationInterface {
                     type: "float",
                 },
                 {
-                    name: "user",
+                    name: "userId",
                     type: "uuid",
                 },
             ]
@@ -103,7 +103,7 @@ export class CreateTables1707407931617 implements MigrationInterface {
 
         // Criação da chave estrangeira entre Account e User
         await queryRunner.createForeignKey("accounts", new TableForeignKey({
-            columnNames: ["user"],
+            columnNames: ["userId"],
             referencedColumnNames: ["id"],
             referencedTableName: "users",
             onDelete: "CASCADE", // Defina a ação de exclusão em cascata, se necessário
