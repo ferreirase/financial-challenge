@@ -1,23 +1,48 @@
 version: '3'
 services:
-    postgresdb:
-      container_name: postgres_container
-      restart: unless-stopped
-      image: postgres:latest
-      environment:
-        POSTGRES_USER: ${POSTGRES_USER:-postgres}
-        POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-docker}
-        POSTGRES_DB: doopay
-        POSTGRES_EXTENSIONS: uuid-ossp
-        PGDATA: /data/postgres
+  postgresdb:
+    container_name: postgres_container
+    restart: unless-stopped
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-docker}
+      POSTGRES_DB: doopay
+      POSTGRES_EXTENSIONS: uuid-ossp
+      PGDATA: /data/postgres
 
-      volumes:
-        - postgres_data:/var/lib/postgres
-        - ./dbscripts/postgres:/docker-entrypoint-initdb.d
-      ports:
-        - "5432:5432"
-      networks:
-        - postgres
+    volumes:
+      - postgres_data:/var/lib/postgres
+      - ./dbscripts/postgres:/docker-entrypoint-initdb.d
+    ports:
+      - "5432:5432"
+    networks:
+      - postgres
+      
+  app:
+    build: .
+    ports:
+      - '81:3000'
+    networks:
+      - postgres
+    command: npm run dev
+    volumes:
+      - .:/src/
+      - nodemodules:/src/node_modules
+    links:
+      - postgresdb
+    depends_on:
+      - postgresdb  
+
+  nginx:
+    build: ./nginx
+    ports:
+      - '8080:80'
+    depends_on:
+      - app
+    networks:
+      - postgres
+  
         
 networks:
   postgres:

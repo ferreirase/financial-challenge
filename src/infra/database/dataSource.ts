@@ -6,7 +6,7 @@ dotenv.config();
 export function getConfig() {
     return {
         type: 'postgres',
-        host: '0.0.0.0',
+        host: 'postgresdb',
         port: 5432,
         username: 'postgres',
         password: 'docker',

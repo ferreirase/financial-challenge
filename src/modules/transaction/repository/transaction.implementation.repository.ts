@@ -27,6 +27,8 @@ export default class TransactionImplementationRepository {
       .values({
         senderAccount: { id: senderAccount.id },
         receiverAccount: { id: receiverAccount.id },
+        senderAccountId: senderAccount.id,
+        receiverAccountId: receiverAccount.id,
         amount,
         status,
         createdAt: new Date()
