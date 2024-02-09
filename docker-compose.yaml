@@ -1,13 +1,13 @@
 version: '3'
+
 services:
-  postgresdb:
-    container_name: postgres_container
+  database:
     restart: unless-stopped
     image: postgres:latest
     environment:
-      POSTGRES_USER: ${POSTGRES_USER:-postgres}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-docker}
-      POSTGRES_DB: doopay
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
       POSTGRES_EXTENSIONS: uuid-ossp
       PGDATA: /data/postgres
 
@@ -17,22 +17,22 @@ services:
     ports:
       - "5432:5432"
     networks:
-      - postgres
+      - back_end
       
   app:
     build: .
     ports:
       - '81:3000'
     networks:
-      - postgres
+      - back_end
     command: npm run dev
     volumes:
       - .:/src/
       - nodemodules:/src/node_modules
     links:
-      - postgresdb
+      - database
     depends_on:
-      - postgresdb  
+      - database  
 
   nginx:
     build: ./nginx
@@ -41,11 +41,11 @@ services:
     depends_on:
       - app
     networks:
-      - postgres
+      - back_end
   
         
 networks:
-  postgres:
+  back_end:
     driver: bridge
 
 volumes:
